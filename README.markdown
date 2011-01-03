@@ -28,7 +28,7 @@ Instead of this:
 
 JavaScript Strings, Numbers, Booleans and Dates are automatically marshaled into their SQL form.
 
-See `test/test.js` for examples of API usage. Most everything is there: raw SQL support (for creating and dropping databases and tables), row inserting, selecting and updating. Notably absent is support for deleting rows -- I just haven't written it yet. Patches welcome.
+See `test/test.js` for examples of API usage. Most everything is there: raw SQL support (for creating and dropping databases and tables), row inserting, selecting, updating, and deleting. Patches welcome.
 
 A word about security: arguments to `values` and placeholders (the `?` in queries) are escaped. All other inputs should be be hard-coded strings (not variables, especially when supplied by users).
 

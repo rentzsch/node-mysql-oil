@@ -1,6 +1,8 @@
 var sys = require('sys');
 var assert = require('assert');
-var mysql_oil = require('mysql-oil');
+var path = require('path');
+require.paths.unshift(path.dirname(__dirname)+'/lib');
+var mysql_oil = require('node-mysql-oil');
 var mysql = mysql_oil.connect({});
 var testDB = mysql_oil.connect({db:'db_oil_test'});
 
@@ -15,7 +17,6 @@ step(
     mysql('create database db_oil_test', this);
   },
   function dropTable(err){
-    mysql.end();
     if (err) throw err;
     console.log('database created');
     
@@ -78,13 +79,33 @@ step(
       cb: this
     });
   },
-  function incrementRow(err, result){
-    testDB.end();
+  function deleteRow(err, result){
     if (err) throw err;
-    
     console.log('row updated');
     assert.equal(result.affectedRows, 1);
     console.log('success!');
+    
+    testDB({
+      delete_from: 't_test',
+      where: ['c_number = ?', 43],
+      cb: this
+    });
+  },
+  function deletedRow(err, result){
+      if (err) throw err;
+    
+      console.log('row deleted');
+      assert.equal(result.affectedRows, 1);
+      console.log('success!');
+
+      mysql('drop database if exists db_oil_test', this);
+  },
+  function droppedDatabase(err){
+      if (err) throw err;
+      console.log('cleaned up');
+
+      testDB.end();
+      mysql.end();
   }
 );
 
