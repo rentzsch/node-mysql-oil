@@ -104,8 +104,12 @@ step(
       if (err) throw err;
       console.log('cleaned up');
 
-      testDB.end();
-      mysql.end();
+      testDB.disconnect();
+      mysql.disconnect(this);
+  },
+  function disconnected(err) {
+      if (err) throw err;
+      console.log('disconnected');
   }
 );
 
