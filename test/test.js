@@ -37,13 +37,38 @@ step(
       this
     );
   },
-  function insertRow(err){
+  function createJoinTable1(err){
     if (err) throw err;
-    console.log('table created');
+
+    testDB(
+      'create table t_join ('+
+        'id int not null primary key auto_increment,'+
+        'test_id int,'+
+        'c_join_string varchar(255)'+
+      ') engine=innodb default charset=utf8 collate=utf8_unicode_ci',
+      this
+    );
+  },
+  function createJoinTable2(err){
+    if (err) throw err;
+
+    testDB(
+      'create table t_join2 ('+
+        'id int not null primary key auto_increment,'+
+        'join_id int,'+
+        'c_amount int'+
+      ') engine=innodb default charset=utf8 collate=utf8_unicode_ci',
+      this
+    );
+  },
+  function insertRow1(err){
+    if (err) throw err;
+    console.log('tables created');
     
     testDB({
       insert_into: 't_test',
       values: {
+        id: 1,
         c_string: '“Iñtërnâtiônàlizætiøn”',
         c_number: 42,
         c_date: new Date(),
@@ -52,23 +77,82 @@ step(
       cb: this
     });
   },
-  function selectRow(err){
+  function insertRow2(err){
     if (err) throw err;
-    console.log('row inserted');
+
+    testDB({
+      insert_into: 't_join',
+      values: {
+        id: 2,
+        test_id: 1,
+        c_join_string: 'joined'
+      },
+      cb: this
+    });
+  },
+  function insertRow3(err){
+    if (err) throw err;
+
+    testDB({
+      insert_into: 't_join2',
+      values: {
+        id: 3,
+        join_id: 2,
+        c_amount: 1,
+      },
+      cb: this
+    });
+  },
+  function insertRow4(err){
+    if (err) throw err;
+
+    testDB({
+      insert_into: 't_join2',
+      values: {
+        id: 4,
+        join_id: 2,
+        c_amount: 1,
+      },
+      cb: this
+    });
+  },
+  function selectRow1(err){
+    if (err) throw err;
+    console.log('rows inserted');
     
     testDB({
-      select: 'c_number, c_date',
+      select: 'c_number, c_date, t1.c_join_string AS c_join1, SUM(t2.c_amount) AS c_total',
       from: 't_test',
-      where: ['c_string = ?', '“Iñtërnâtiônàlizætiøn”'],
+      join: [{inner: 't_join t1', on: 't_test.id = t1.test_id'},
+             {join: 't_join2 t2', on: 't1.id = t2.join_id'}],
+      where: ['c_string = ? AND t1.c_join_string = ? AND t2.c_amount = ?', '“Iñtërnâtiônàlizætiøn”', 'joined', 1],
+      group_by: 't_test.id',
+      having: 'c_total > 1',
+      order_by: 't_test.id',
+      cb: this
+    });
+  },
+  function checkRow1(err, rows){
+    if (err) throw err;
+    
+    assert.ok(rows instanceof Array);
+    assert.equal(rows.length, 1);
+    assert.equal(rows[0].c_join1, 'joined', 'JOIN failed, c_join1 != "joined"');
+    assert.equal(rows[0].c_total, 2, "GROUP BY failed, c_total != 2");
+    
+    testDB({
+      select: '*',
+      from: 't_join2',
+      limit: 1,
       cb: this
     });
   },
   function updateRow(err, rows){
     if (err) throw err;
-    console.log('row selected');
+    console.log('rows selected');
     
     assert.ok(rows instanceof Array);
-    assert.equal(rows.length, 1);
+    assert.equal(rows.length, 1, '"LIMIT 1" failed');
     
     testDB({
       update: 't_test',
