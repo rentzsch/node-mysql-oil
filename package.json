@@ -1,5 +1,5 @@
 { "name" : "mysql-oil"
-, "version": "0.3"
+, "version": "0.3.0"
 , "devDependencies": {"mysql": ">=0.8.0"}
 , "main" : "./lib/node-mysql-oil"
 }
