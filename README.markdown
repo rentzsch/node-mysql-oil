@@ -5,6 +5,7 @@ Oil makes SQL more *JavaScripty* by transforming JavaScript structures into SQL 
 
 For example, this:
 
+	var db = require('mysql-oil').connect({db:'db_demo'});
 	db({
 		select: 'avg(t_main) as average, sum(t1.amount) as total',
 		from: 't_main',
