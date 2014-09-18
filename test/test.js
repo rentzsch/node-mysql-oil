@@ -1,8 +1,8 @@
 var sys = require('sys');
 var assert = require('assert');
 var path = require('path');
-require.paths.unshift(path.dirname(__dirname)+'/lib');
-var mysql_oil = require('node-mysql-oil');
+//require.paths.unshift(path.dirname(__dirname)+'/lib');
+var mysql_oil = require('../node-mysql-oil');
 var mysql = mysql_oil.connect({});
 var testDB = mysql_oil.connect({db:'db_oil_test'});
 

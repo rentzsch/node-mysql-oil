@@ -1,12 +1,12 @@
-//  node-mysql-oil.js 0.2.1
-//    Copyright (c) 2010 Jonathan 'Wolf' Rentzsch: <http://rentzsch.com>
-//    Some rights reserved: <http://opensource.org/licenses/mit-license.php>
+//  node-mysql-oil.js 0.4
+//    Copyright (c) 2010-2014 Jonathan 'Wolf' Rentzsch: http://rentzsch.com
+//    Some rights reserved: http://opensource.org/licenses/mit
 //      
 //  A slick api on top node-mysql:
 //    https://github.com/rentzsch/node-mysql-oil
 
 var sys = require('sys');
-var MySQLClient = require('mysql').Client;
+var MySQLClient = require('mysql');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +22,7 @@ OilConnection.prototype.connect = function(cb) {
     if (!('user' in this.connectionOptions)) {
       this.connectionOptions.user = 'root';
     }
-    this.mysqlConnection = new MySQLClient(this.connectionOptions);
+    this.mysqlConnection = new MySQLClient.createConnection(this.connectionOptions);
     this.mysqlConnection.connect(cb);
   }
 }
